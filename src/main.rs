@@ -1,104 +1,182 @@
-use structopt::StructOpt;
+//! # convertx
+//!
+//! A multipurpose unit-conversion CLI supporting many unit types via subcommands.
+//!
+//! ## Usage
+//!
+//! ```sh
+//! convertx <SUBCOMMAND> [OPTIONS]
+//! ```
+//!
+//! ### Examples
+//!
+//! Convert 1024 bytes to megabytes:
+//! ```sh
+//! convertx bytes 1024 --megabytes
+//! # Output: 1024 bytes = 0.00 MB
+//! ```
+//!
+//! Convert 3600 seconds to human-readable time:
+//! ```sh
+//! convertx time 3600 --human-readable
+//! # Output: 3600 seconds = 1h 0m 0s
+//! ```
+//!
+//! Convert 1 kilometer to feet:
+//! ```sh
+//! convertx length 1 --from kilometers --to feet
+//! # Output: 1.0000 kilometers = 3280.8400 feet
+//! ```
+//!
+//! Convert 100 Fahrenheit to Celsius:
+//! ```sh
+//! convertx temperature 100 --from F --to C
+//! # Output: 100.00°F = 37.78°C
+//! ```
+//!
+//! Run with `--help` to see all supported subcommands and options.
+//!
 use std::fmt;
+use structopt::StructOpt;
 
+/// Constant: Number of feet in a meter.
 const FEET_IN_METER: f64 = 3.28084;
+/// Constant: Number of inches in a meter.
 const INCHES_IN_METER: f64 = 39.3701;
+/// Constant: Number of kilograms in one pound.
 const KG_IN_LB: f64 = 2.20462;
+/// Constant: Number of ounces in one kilogram.
 const OZ_IN_KG: f64 = 35.274;
+/// Constant: Number of bits per second in one megabit per second.
 const BPS_IN_MBPS: f64 = 1_000_000.0;
+/// Constant: Zero-offset for Kelvin scale.
 const KELVIN_OFFSET: f64 = 273.15;
 
+/// Command-line interface definition for convertx.
+/// Use `convertx <SUBCOMMAND> [OPTIONS]` for usage.
 #[derive(StructOpt, Debug)]
 #[structopt(name = "convertx", about = "Multi-purpose unit converter CLI")]
 enum Cli {
-    /// Convert byte values
+    /// Convert byte values (e.g., bytes to MB or human readable).
     Bytes {
-        /// Number of bytes
+        /// Number of bytes to convert.
         num: u64,
-        /// Convert bytes to megabytes
+        /// Convert bytes to megabytes.
         #[structopt(short, long)]
         megabytes: bool,
-        /// Convert bytes to human-readable
+        /// Convert bytes to a human-readable string (e.g., "1.00 MB").
         #[structopt(short = "r", long = "human-readable")]
         human_readable: bool,
     },
-    /// Convert time values in seconds
+    /// Convert time (seconds) to a human-readable format.
     Time {
-        /// Seconds
+        /// Seconds to convert.
         seconds: u64,
-        /// Convert seconds to human-readable time
+        /// Convert to human-readable format (e.g., "1h 13m 5s")
         #[structopt(short = "r", long = "human-readable")]
         human_readable: bool,
     },
-    /// Convert length units
+    /// Convert length units.
     Length {
+        /// Value to convert.
         value: f64,
+        /// Unit to convert from (default: meters).
         #[structopt(short = "f", long, default_value = "meters", possible_values = &LengthUnit::variants(), case_insensitive = true)]
         from: LengthUnit,
+        /// Unit to convert to (default: feet).
         #[structopt(short = "t", long, default_value = "feet", possible_values = &LengthUnit::variants(), case_insensitive = true)]
         to: LengthUnit,
     },
-    /// Convert temperature units
+    /// Convert temperature units.
     Temperature {
+        /// Value to convert.
         value: f64,
+        /// Source temperature unit.
         #[structopt(short = "f", long, possible_values = &TempUnit::variants(), case_insensitive = true)]
         from: TempUnit,
+        /// Target temperature unit.
         #[structopt(short = "t", long, possible_values = &TempUnit::variants(), case_insensitive = true)]
         to: TempUnit,
     },
-    /// Convert mass/weight units
+    /// Convert mass/weight units.
     Mass {
+        /// Value to convert.
         value: f64,
+        /// Source mass unit.
         #[structopt(short = "f", long, possible_values = &MassUnit::variants(), case_insensitive = true)]
         from: MassUnit,
+        /// Target mass unit.
         #[structopt(short = "t", long, possible_values = &MassUnit::variants(), case_insensitive = true)]
         to: MassUnit,
     },
-    /// Convert data rate units
+    /// Convert data rate units.
     Datarate {
+        /// Value to convert.
         value: f64,
+        /// Source data rate unit.
         #[structopt(short = "f", long, possible_values = &DataRateUnit::variants(), case_insensitive = true)]
         from: DataRateUnit,
+        /// Target data rate unit.
         #[structopt(short = "t", long, possible_values = &DataRateUnit::variants(), case_insensitive = true)]
         to: DataRateUnit,
     },
-
-        /// Convert area units
+    /// Convert area units.
     Area {
+        /// Value to convert.
         value: f64,
+        /// Source area unit.
         #[structopt(short = "f", long, possible_values = &AreaUnit::variants(), case_insensitive = true)]
         from: AreaUnit,
+        /// Target area unit.
         #[structopt(short = "t", long, possible_values = &AreaUnit::variants(), case_insensitive = true)]
         to: AreaUnit,
     },
-    /// Convert volume units
+    /// Convert volume units.
     Volume {
+        /// Value to convert.
         value: f64,
+        /// Source volume unit.
         #[structopt(short = "f", long, possible_values = &VolumeUnit::variants(), case_insensitive = true)]
         from: VolumeUnit,
+        /// Target volume unit.
         #[structopt(short = "t", long, possible_values = &VolumeUnit::variants(), case_insensitive = true)]
         to: VolumeUnit,
     },
-    /// Convert speed units
+    /// Convert speed units.
     Speed {
+        /// Value to convert.
         value: f64,
+        /// Source speed unit.
         #[structopt(short = "f", long, possible_values = &SpeedUnit::variants(), case_insensitive = true)]
         from: SpeedUnit,
+        /// Target speed unit.
         #[structopt(short = "t", long, possible_values = &SpeedUnit::variants(), case_insensitive = true)]
         to: SpeedUnit,
     },
-    /// Convert pressure units
+    /// Convert pressure units.
     Pressure {
+        /// Value to convert.
         value: f64,
+        /// Source pressure unit.
         #[structopt(short = "f", long, possible_values = &PressureUnit::variants(), case_insensitive = true)]
         from: PressureUnit,
+        /// Target pressure unit.
         #[structopt(short = "t", long, possible_values = &PressureUnit::variants(), case_insensitive = true)]
         to: PressureUnit,
     },
-
 }
 
-// Util traits for Arg enums
+/// Macro for quickly defining enums with string variants and utility implementations.
+///
+/// # Example
+///
+/// ```rust
+/// enum_with_variants!(TempUnit {
+///     C => "C",
+///     F => "F",
+///     K => "K",
+/// });
+/// ```
 macro_rules! enum_with_variants {
     ($name:ident { $($variant:ident => $val:expr),* $(,)? }) => {
         #[derive(Debug, Clone, PartialEq)]
@@ -106,6 +184,7 @@ macro_rules! enum_with_variants {
             $($variant,)*
         }
         impl $name {
+            /// Returns a static list of all variant names as strings.
             fn variants() -> &'static [&'static str] {
                 &[$($val),*]
             }
@@ -130,6 +209,45 @@ macro_rules! enum_with_variants {
     }
 }
 
+// macro_rules! enum_with_variants_with_doc {
+//     // Match with doc string
+//     ($doc:literal $name:ident { $($variant:ident => $val:expr),* $(,)? }) => {
+//         #[doc = $doc]
+//         #[derive(Debug, Clone, PartialEq)]
+//         enum $name {
+//             $($variant,)*
+//         }
+//         impl $name {
+//             fn variants() -> &'static [&'static str] {
+//                 &[$($val),*]
+//             }
+//         }
+//         impl ::std::str::FromStr for $name {
+//             type Err = String;
+//             fn from_str(s: &str) -> Result<Self, Self::Err> {
+//                 match s.to_ascii_lowercase().as_str() {
+//                     $($val => Ok($name::$variant),)*
+//                     _ => Err(format!("invalid variant")),
+//                 }
+//             }
+//         }
+//         impl fmt::Display for $name {
+//             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//                 let s = match self {
+//                     $(Self::$variant => $val,)*
+//                 };
+//                 write!(f, "{}", s)
+//             }
+//         }
+//     };
+//     // Match without doc string (for backward compatibility)
+//     ($name:ident { $($variant:ident => $val:expr),* $(,)? }) => {
+//         enum_with_variants_with_doc!("" $name { $($variant => $val),* });
+//     };
+// }
+
+// Define enums for each category with macro.
+
 enum_with_variants!(LengthUnit {
     Meters => "meters",
     Feet => "feet",
@@ -137,23 +255,27 @@ enum_with_variants!(LengthUnit {
     Kilometers => "kilometers",
 });
 
+// Supported units for temperature.
 enum_with_variants!(TempUnit {
-    C => "C",
-    F => "F",
-    K => "K",
+    C => "c",
+    F => "f",
+    K => "k",
 });
 
+// Supported units for mass/weight.
 enum_with_variants!(MassUnit {
     Kg => "kg",
     Lb => "lb",
     Oz => "oz",
 });
 
+// Supported units for data rate.
 enum_with_variants!(DataRateUnit {
     Bps => "bps",
     Mbps => "mbps",
 });
 
+// Supported units for area.
 enum_with_variants!(AreaUnit {
     SquareMeters => "sqm",
     SquareFeet => "sqft",
@@ -161,6 +283,7 @@ enum_with_variants!(AreaUnit {
     Hectares => "hectares",
 });
 
+// Supported units for volume.
 enum_with_variants!(VolumeUnit {
     Liters => "liters",
     Milliliters => "milliliters",
@@ -169,6 +292,7 @@ enum_with_variants!(VolumeUnit {
     Gallons => "gallons",
 });
 
+// Supported units for speed.
 enum_with_variants!(SpeedUnit {
     Mps => "mps",
     Kph => "kph",
@@ -176,6 +300,7 @@ enum_with_variants!(SpeedUnit {
     Knots => "knots",
 });
 
+// Supported units for pressure.
 enum_with_variants!(PressureUnit {
     Pascal => "pa",
     Bar => "bar",
@@ -183,11 +308,22 @@ enum_with_variants!(PressureUnit {
     Psi => "psi",
 });
 
-
-// Conversion functions 
+/// Convert bytes to megabytes.
+///
+/// # Example
+/// ```
+/// assert_eq!(bytes_to_mb(1048576), 1.0);
+/// ```
 fn bytes_to_mb(num_bytes: u64) -> f64 {
     num_bytes as f64 / (1024.0 * 1024.0)
 }
+
+/// Convert a number of bytes to a human-readable string.
+///
+/// # Example
+/// ```
+/// assert_eq!(bytes_to_human_readable(1048576), "1.00 MB");
+/// ```
 fn bytes_to_human_readable(num_bytes: u64) -> String {
     let units = ["B", "KB", "MB", "GB", "TB", "PB"];
     let mut idx = 0;
@@ -198,6 +334,13 @@ fn bytes_to_human_readable(num_bytes: u64) -> String {
     }
     format!("{:.2} {}", n, units[idx])
 }
+
+/// Convert seconds to a human-readable string (e.g., days, hours, minutes, seconds).
+///
+/// # Example
+/// ```
+/// assert_eq!(seconds_to_human_readable(3661), "1h 1m 1s");
+/// ```
 fn seconds_to_human_readable(seconds: u64) -> String {
     let (d, h, mut m, s);
     m = seconds / 60;
@@ -206,12 +349,30 @@ fn seconds_to_human_readable(seconds: u64) -> String {
     m = m % 60;
     d = h / 24;
     let mut parts = vec![];
-    if d > 0 { parts.push(format!("{}d", d)); }
-    if h % 24 > 0 { parts.push(format!("{}h", h % 24)); }
-    if m > 0 { parts.push(format!("{}m", m)); }
-    if s > 0 || parts.is_empty() { parts.push(format!("{}s", s)); }
+    if d > 0 {
+        parts.push(format!("{}d", d));
+    }
+    if h % 24 > 0 {
+        parts.push(format!("{}h", h % 24));
+    }
+    if m > 0 {
+        parts.push(format!("{}m", m));
+    }
+    if s > 0 || parts.is_empty() {
+        parts.push(format!("{}s", s));
+    }
     parts.join(" ")
 }
+
+/// Convert between length units.
+///
+/// Returns `Some(result)` if conversion is supported.
+///
+/// # Example
+/// ```
+/// use crate::LengthUnit::*;
+/// assert!((convert_length(1.0, Meters, Feet).unwrap() - 3.28084).abs() < 1e-5);
+/// ```
 fn convert_length(value: f64, from: LengthUnit, to: LengthUnit) -> Option<f64> {
     use LengthUnit::*;
     let in_meters = match from {
@@ -229,6 +390,13 @@ fn convert_length(value: f64, from: LengthUnit, to: LengthUnit) -> Option<f64> {
     Some(result)
 }
 
+/// Convert between temperature units (Celsius, Fahrenheit, Kelvin).
+///
+/// # Example
+/// ```
+/// use crate::TempUnit::*;
+/// assert!((convert_temp(0.0, C, F).unwrap() - 32.0).abs() < 1e-6);
+/// ```
 fn convert_temp(value: f64, from: TempUnit, to: TempUnit) -> Option<f64> {
     use TempUnit::*;
     let celsius = match from {
@@ -244,6 +412,13 @@ fn convert_temp(value: f64, from: TempUnit, to: TempUnit) -> Option<f64> {
     Some(result)
 }
 
+/// Convert between mass units.
+///
+/// # Example
+/// ```
+/// use crate::MassUnit::*;
+/// assert!((convert_mass(1.0, Kg, Lb).unwrap() - 2.20462).abs() < 1e-5);
+/// ```
 fn convert_mass(value: f64, from: MassUnit, to: MassUnit) -> Option<f64> {
     use MassUnit::*;
     let in_kg = match from {
@@ -259,6 +434,13 @@ fn convert_mass(value: f64, from: MassUnit, to: MassUnit) -> Option<f64> {
     Some(result)
 }
 
+/// Convert between data rate units (bps, Mbps).
+///
+/// # Example
+/// ```
+/// use crate::DataRateUnit::*;
+/// assert_eq!(convert_datarate(1_000_000.0, Bps, Mbps), Some(1.0));
+/// ```
 fn convert_datarate(value: f64, from: DataRateUnit, to: DataRateUnit) -> Option<f64> {
     use DataRateUnit::*;
     match (from, to) {
@@ -268,10 +450,15 @@ fn convert_datarate(value: f64, from: DataRateUnit, to: DataRateUnit) -> Option<
     }
 }
 
-// --- Area Conversions ---
+/// Convert between area units.
+///
+/// # Example
+/// ```
+/// use crate::AreaUnit::*;
+/// assert!((convert_area(1.0, Acres, SquareMeters).unwrap() - 4046.85642).abs() < 1e-4);
+/// ```
 fn convert_area(value: f64, from: AreaUnit, to: AreaUnit) -> Option<f64> {
     use AreaUnit::*;
-    // convert everything to square_meters first
     let sqm = match from {
         SquareMeters => value,
         SquareFeet => value / 10.7639,
@@ -287,10 +474,15 @@ fn convert_area(value: f64, from: AreaUnit, to: AreaUnit) -> Option<f64> {
     Some(result)
 }
 
-// --- Volume Conversions ---
+/// Convert between volume units.
+///
+/// # Example
+/// ```
+/// use crate::VolumeUnit::*;
+/// assert!((convert_volume(1.0, Gallons, Liters).unwrap() - 3.78541).abs() < 1e-5);
+/// ```
 fn convert_volume(value: f64, from: VolumeUnit, to: VolumeUnit) -> Option<f64> {
     use VolumeUnit::*;
-    // All to liters
     let liters = match from {
         Liters => value,
         Milliliters => value / 1000.0,
@@ -308,10 +500,15 @@ fn convert_volume(value: f64, from: VolumeUnit, to: VolumeUnit) -> Option<f64> {
     Some(result)
 }
 
-// --- Speed Conversions ---
+/// Convert between speed units.
+///
+/// # Example
+/// ```
+/// use crate::SpeedUnit::*;
+/// assert!((convert_speed(1.0, Mps, Kph).unwrap() - 3.6).abs() < 1e-6);
+/// ```
 fn convert_speed(value: f64, from: SpeedUnit, to: SpeedUnit) -> Option<f64> {
     use SpeedUnit::*;
-    // All to meters_per_second
     let mps = match from {
         Mps => value,
         Kph => value / 3.6,
@@ -327,10 +524,15 @@ fn convert_speed(value: f64, from: SpeedUnit, to: SpeedUnit) -> Option<f64> {
     Some(result)
 }
 
-// --- Pressure Conversions ---
+/// Convert between pressure units.
+///
+/// # Example
+/// ```
+/// use crate::PressureUnit::*;
+/// assert!((convert_pressure(1.0, Atm, Pascal).unwrap() - 101325.0).abs() < 1e-3);
+/// ```
 fn convert_pressure(value: f64, from: PressureUnit, to: PressureUnit) -> Option<f64> {
     use PressureUnit::*;
-    // All to pascal
     let pa = match from {
         Pascal => value,
         Bar => value * 100000.0,
@@ -346,12 +548,18 @@ fn convert_pressure(value: f64, from: PressureUnit, to: PressureUnit) -> Option<
     Some(result)
 }
 
-
+/// Entry point for the CLI application.
+///
+/// Parses CLI arguments, dispatches the appropriate conversion, and prints results.
 
 fn main() {
     let cli = Cli::from_args();
     match cli {
-        Cli::Bytes { num, megabytes, human_readable } => {
+        Cli::Bytes {
+            num,
+            megabytes,
+            human_readable,
+        } => {
             if megabytes {
                 println!("{} bytes = {:.2} MB", num, bytes_to_mb(num));
             } else if human_readable {
@@ -360,9 +568,16 @@ fn main() {
                 println!("Please specify --megabytes or --human-readable. See --help.");
             }
         }
-        Cli::Time { seconds, human_readable } => {
+        Cli::Time {
+            seconds,
+            human_readable,
+        } => {
             if human_readable {
-                println!("{} seconds = {}", seconds, seconds_to_human_readable(seconds));
+                println!(
+                    "{} seconds = {}",
+                    seconds,
+                    seconds_to_human_readable(seconds)
+                );
             } else {
                 println!("Please specify --human-readable. See --help.");
             }
@@ -378,13 +593,26 @@ fn main() {
         }
         Cli::Temperature { value, from, to } => {
             if from == to {
-                println!("{:.2}°{} = {:.2}°{}", value, format!("{}", from).to_uppercase(), to, format!("{}", to).to_uppercase());
+                println!(
+                    "{:.2}°{} = {:.2}°{}",
+                    value,
+                    format!("{}", from).to_uppercase(),
+                    to,
+                    format!("{}", to).to_uppercase()
+                );
             } else if let Some(result) = convert_temp(value, from.clone(), to.clone()) {
-                println!("{:.2}°{} = {:.2}°{}", value, format!("{}", from).to_uppercase(), result, format!("{}", to).to_uppercase());
+                println!(
+                    "{:.2}°{} = {:.2}°{}",
+                    value,
+                    format!("{}", from).to_uppercase(),
+                    result,
+                    format!("{}", to).to_uppercase()
+                );
             } else {
                 println!("Conversion from {} to {} not supported.", from, to);
             }
         }
+
         Cli::Mass { value, from, to } => {
             if from == to {
                 println!("{:.4} {} = {:.4} {}", value, from, value, to);
@@ -420,7 +648,7 @@ fn main() {
             } else {
                 println!("Conversion from {} to {} not supported.", from, to);
             }
-        },
+        }
         Cli::Speed { value, from, to } => {
             if from == to {
                 println!("{:.4} {} = {:.4} {}", value, from, value, to);
@@ -429,7 +657,7 @@ fn main() {
             } else {
                 println!("Conversion from {} to {} not supported.", from, to);
             }
-        },
+        }
         Cli::Pressure { value, from, to } => {
             if from == to {
                 println!("{:.4} {} = {:.4} {}", value, from, value, to);
@@ -439,11 +667,8 @@ fn main() {
                 println!("Conversion from {} to {} not supported.", from, to);
             }
         }
-
-
     }
 }
-
 
 #[cfg(test)]
 mod tests {

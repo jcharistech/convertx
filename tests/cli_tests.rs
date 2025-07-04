@@ -19,7 +19,9 @@ fn time_human_readable() {
 fn length_kilometers_to_meters() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["length", "1", "--from", "kilometers", "--to", "meters"]);
-    cmd.assert().success().stdout(contains("1.0000 kilometers = 1000.0000 meters"));
+    cmd.assert()
+        .success()
+        .stdout(contains("1.0000 kilometers = 1000.0000 meters"));
 }
 
 #[test]
@@ -33,40 +35,52 @@ fn temperature_f_to_c() {
 fn mass_kg_to_lb() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["mass", "1", "--from", "kg", "--to", "lb"]);
-    cmd.assert().success().stdout(contains("1.0000 kg = 2.2046 lb"));
+    cmd.assert()
+        .success()
+        .stdout(contains("1.0000 kg = 2.2046 lb"));
 }
 
 #[test]
 fn datarate_mbps_to_bps() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["datarate", "1", "--from", "mbps", "--to", "bps"]);
-    cmd.assert().success().stdout(contains("1.0000 mbps = 1000000.0000 bps"));
+    cmd.assert()
+        .success()
+        .stdout(contains("1.0000 mbps = 1000000.0000 bps"));
 }
 
 #[test]
 fn area_acres_to_sqm() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["area", "1", "--from", "acres", "--to", "sqm"]);
-    cmd.assert().success().stdout(contains("1.0000 acres = 4046.8564 sqm"));
+    cmd.assert()
+        .success()
+        .stdout(contains("1.0000 acres = 4046.8564 sqm"));
 }
 
 #[test]
 fn volume_gallons_to_liters() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["volume", "1", "--from", "gallons", "--to", "liters"]);
-    cmd.assert().success().stdout(contains("1.0000 gallons = 3.7854 liters"));
+    cmd.assert()
+        .success()
+        .stdout(contains("1.0000 gallons = 3.7854 liters"));
 }
 
 #[test]
 fn speed_mph_to_kph() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["speed", "60", "--from", "mph", "--to", "kph"]);
-    cmd.assert().success().stdout(contains("60.0000 mph = 96.5606 kph"));
+    cmd.assert()
+        .success()
+        .stdout(contains("60.0000 mph = 96.5606 kph"));
 }
 
 #[test]
 fn pressure_atm_to_psi() {
     let mut cmd = Command::cargo_bin("convertx").unwrap();
     cmd.args(&["pressure", "1", "--from", "atm", "--to", "psi"]);
-    cmd.assert().success().stdout(contains("1.0000 atm = 14.6959 psi"));
+    cmd.assert()
+        .success()
+        .stdout(contains("1.0000 atm = 14.6959 psi"));
 }
