@@ -1,7 +1,26 @@
 //! # convertx
 //!
-//! A multipurpose unit-conversion CLI supporting many unit types via subcommands.
+//! A simple unit-conversion CLI supporting many unit types such as
+//! + bytes 
+//! + time
+//! + length
+//! + temperature
+//! + mass 
+//! + data rate, 
+//! + area, volume, 
+//! + speed
+//! + pressure 
+//! + more
 //!
+//! ## Installation
+//! Simply put the following in your **Cargo.toml**.
+//! 
+//! ```toml
+//! [dependencies]
+//! convertx = "0.1.0"
+//! ```
+//! Or use `cargo add convertx`
+//! 
 //! ## Usage
 //!
 //! ```sh
@@ -14,11 +33,17 @@
 //! ```sh
 //! convertx bytes 1024 --megabytes
 //! # Output: 1024 bytes = 0.00 MB
+//! 
+//! convertx bytes 1024 -m
+//! # Output: 1024 bytes = 0.00 MB
 //! ```
 //!
 //! Convert 3600 seconds to human-readable time:
 //! ```sh
 //! convertx time 3600 --human-readable
+//! # Output: 3600 seconds = 1h 0m 0s
+//! 
+//! convertx time 3600 -h
 //! # Output: 3600 seconds = 1h 0m 0s
 //! ```
 //!
@@ -26,6 +51,9 @@
 //! ```sh
 //! convertx length 1 --from kilometers --to feet
 //! # Output: 1.0000 kilometers = 3280.8400 feet
+//! 
+//! convertx length 10 -f kilometers -t feet
+//! # Output: 10.0000 kilometers = 32800.8400 feet
 //! ```
 //!
 //! Convert 100 Fahrenheit to Celsius:
@@ -65,7 +93,7 @@ enum Cli {
         #[structopt(short, long)]
         megabytes: bool,
         /// Convert bytes to a human-readable string (e.g., "1.00 MB").
-        #[structopt(short = "r", long = "human-readable")]
+        #[structopt(short = "h", long = "human-readable")]
         human_readable: bool,
     },
     /// Convert time (seconds) to a human-readable format.
@@ -73,7 +101,7 @@ enum Cli {
         /// Seconds to convert.
         seconds: u64,
         /// Convert to human-readable format (e.g., "1h 13m 5s")
-        #[structopt(short = "r", long = "human-readable")]
+        #[structopt(short = "h", long = "human-readable")]
         human_readable: bool,
     },
     /// Convert length units.
@@ -209,45 +237,8 @@ macro_rules! enum_with_variants {
     }
 }
 
-// macro_rules! enum_with_variants_with_doc {
-//     // Match with doc string
-//     ($doc:literal $name:ident { $($variant:ident => $val:expr),* $(,)? }) => {
-//         #[doc = $doc]
-//         #[derive(Debug, Clone, PartialEq)]
-//         enum $name {
-//             $($variant,)*
-//         }
-//         impl $name {
-//             fn variants() -> &'static [&'static str] {
-//                 &[$($val),*]
-//             }
-//         }
-//         impl ::std::str::FromStr for $name {
-//             type Err = String;
-//             fn from_str(s: &str) -> Result<Self, Self::Err> {
-//                 match s.to_ascii_lowercase().as_str() {
-//                     $($val => Ok($name::$variant),)*
-//                     _ => Err(format!("invalid variant")),
-//                 }
-//             }
-//         }
-//         impl fmt::Display for $name {
-//             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//                 let s = match self {
-//                     $(Self::$variant => $val,)*
-//                 };
-//                 write!(f, "{}", s)
-//             }
-//         }
-//     };
-//     // Match without doc string (for backward compatibility)
-//     ($name:ident { $($variant:ident => $val:expr),* $(,)? }) => {
-//         enum_with_variants_with_doc!("" $name { $($variant => $val),* });
-//     };
-// }
-
 // Define enums for each category with macro.
-
+// Supported units for length.
 enum_with_variants!(LengthUnit {
     Meters => "meters",
     Feet => "feet",

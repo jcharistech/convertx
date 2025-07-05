@@ -1,7 +1,7 @@
 #### Convertx
 ### Unit Converter CLI
 
-A comprehensive, user-friendly, and extensible Rust command-line tool for converting between a wide range of units in categories such as **length, temperature, mass, data rate, area, volume, speed, pressure, bytes, and time**.
+A simple Rust command-line tool for converting between a wide range of units in categories such as **length, temperature, mass, data rate, area, volume, speed, pressure, bytes, time and more**.
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://jcharistech.github.io/convertx/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://jcharistech.github.io/convertx/)
@@ -23,6 +23,8 @@ convertx = "0.1.0"
 ```
 
 **2. Clone and build:**
+
+Alternatively you can build it from the github repo and optionally install it globally
 ```sh
 git clone https://github.com/jcharistech/convertx.git
 cd convertx
@@ -144,9 +146,6 @@ convertx pressure 101325 --from pa --to atm
 - Add new units by adding an enum variant, conversion function, and CLI case!
 - PRs and improvements very welcome.
 
-## License
-
-MIT
 
 ---
 
