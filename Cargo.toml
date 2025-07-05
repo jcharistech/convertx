@@ -7,7 +7,7 @@ description = "Multipurpose Units Converter"
 readme = "README.md"
 homepage = "https://jcharistech.github.io/convertx/convertx/"
 repository = "https://github.com/jcharistech/convertx"
-keywords = ["converter", "units", "unit conversion", "bytes","convertx"]
+keywords = ["converter", "units", "unit-conversion", "bytes","convertx"]
 categories = ["cryptography", "command-line-interface", "encoding"]
 license = "MIT"
 
