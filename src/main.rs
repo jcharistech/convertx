@@ -10,7 +10,23 @@
 //! + area, volume, 
 //! + speed
 //! + pressure 
-//! + more
+//! + electric current (ampere, milliampere)
+//! + energy/work/heat (joule, calorie, kilowatt-hour, etc.)
+//! + power (watt, kilowatt, horsepower)
+//! + frequency (hertz, kilohertz)
+//! + angle (degree, radian, gradian)
+//! + force (newton, pound-force)
+//! + luminous intensity (candela, lumen, lux)
+//! + magnetic field (tesla, gauss)
+//! + radioactivity (becquerel, curie)
+//! + capacitance (farad)
+//! + inductance (henry)
+//! + conductance (siemens)
+//! + electric charge (coulomb)
+//! + voltage (volt)
+//! + resistance (ohm)
+//! + illuminance (lux, foot-candle)
+//! + amount of substance (mole)
 //!
 //! ## Installation
 //! Simply put the following in your **Cargo.toml**.
@@ -60,6 +76,17 @@
 //! ```sh
 //! convertx temperature 100 --from F --to C
 //! # Output: 100.00°F = 37.78°C
+//! ```
+//! Convert 1000 joules to kilowatt-hours:
+//! ```sh
+//! convertx energy 1000 --from joule --to kwh
+//! # Output: 1000.00 joule = 0.00028 kWh
+//! ```
+//! 
+//! Convert 1 kilowatt to horsepower:
+//! ```sh
+//! convertx power 1 --from kilowatt --to horsepower
+//! # Output: 1.00 kW = 1.34102 hp
 //! ```
 //!
 //! Run with `--help` to see all supported subcommands and options.
@@ -192,6 +219,158 @@ enum Cli {
         #[structopt(short = "t", long, possible_values = &PressureUnit::variants(), case_insensitive = true)]
         to: PressureUnit,
     },
+    /// Convert electric current units.
+    Current {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &CurrentUnit::variants(), case_insensitive = true)]
+        from: CurrentUnit,
+        #[structopt(short = "t", long, possible_values = &CurrentUnit::variants(), case_insensitive = true)]
+        to: CurrentUnit,
+    },
+
+    /// Convert energy/work/heat units.
+    Energy {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &EnergyUnit::variants(), case_insensitive = true)]
+        from: EnergyUnit,
+        #[structopt(short = "t", long, possible_values = &EnergyUnit::variants(), case_insensitive = true)]
+        to: EnergyUnit,
+    },
+
+    /// Convert power units.
+    Power {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &PowerUnit::variants(), case_insensitive = true)]
+        from: PowerUnit,
+        #[structopt(short = "t", long, possible_values = &PowerUnit::variants(), case_insensitive = true)]
+        to: PowerUnit,
+    },
+
+    /// Convert frequency units.
+    Frequency {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &FrequencyUnit::variants(), case_insensitive = true)]
+        from: FrequencyUnit,
+        #[structopt(short = "t", long, possible_values = &FrequencyUnit::variants(), case_insensitive = true)]
+        to: FrequencyUnit,
+    },
+
+    /// Convert angle units.
+    Angle {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &AngleUnit::variants(), case_insensitive = true)]
+        from: AngleUnit,
+        #[structopt(short = "t", long, possible_values = &AngleUnit::variants(), case_insensitive = true)]
+        to: AngleUnit,
+    },
+
+    /// Convert force units.
+    Force {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &ForceUnit::variants(), case_insensitive = true)]
+        from: ForceUnit,
+        #[structopt(short = "t", long, possible_values = &ForceUnit::variants(), case_insensitive = true)]
+        to: ForceUnit,
+    },
+
+    /// Convert luminous intensity/flux/illuminance units.
+    Luminous {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &LuminousUnit::variants(), case_insensitive = true)]
+        from: LuminousUnit,
+        #[structopt(short = "t", long, possible_values = &LuminousUnit::variants(), case_insensitive = true)]
+        to: LuminousUnit,
+    },
+
+    /// Convert magnetic field units.
+    Magnetic {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &MagneticUnit::variants(), case_insensitive = true)]
+        from: MagneticUnit,
+        #[structopt(short = "t", long, possible_values = &MagneticUnit::variants(), case_insensitive = true)]
+        to: MagneticUnit,
+    },
+
+    /// Convert radioactivity units.
+    Radioactivity {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &RadioactivityUnit::variants(), case_insensitive = true)]
+        from: RadioactivityUnit,
+        #[structopt(short = "t", long, possible_values = &RadioactivityUnit::variants(), case_insensitive = true)]
+        to: RadioactivityUnit,
+    },
+
+    /// Convert capacitance units.
+    Capacitance {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &CapacitanceUnit::variants(), case_insensitive = true)]
+        from: CapacitanceUnit,
+        #[structopt(short = "t", long, possible_values = &CapacitanceUnit::variants(), case_insensitive = true)]
+        to: CapacitanceUnit,
+    },
+        /// Convert inductance units.
+    Inductance {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &InductanceUnit::variants(), case_insensitive = true)]
+        from: InductanceUnit,
+        #[structopt(short = "t", long, possible_values = &InductanceUnit::variants(), case_insensitive = true)]
+        to: InductanceUnit,
+    },
+
+    /// Convert conductance units.
+    Conductance {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &ConductanceUnit::variants(), case_insensitive = true)]
+        from: ConductanceUnit,
+        #[structopt(short = "t", long, possible_values = &ConductanceUnit::variants(), case_insensitive = true)]
+        to: ConductanceUnit,
+    },
+
+    /// Convert electric charge units.
+    Charge {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &ChargeUnit::variants(), case_insensitive = true)]
+        from: ChargeUnit,
+        #[structopt(short = "t", long, possible_values = &ChargeUnit::variants(), case_insensitive = true)]
+        to: ChargeUnit,
+    },
+
+    /// Convert voltage units.
+    Voltage {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &VoltageUnit::variants(), case_insensitive = true)]
+        from: VoltageUnit,
+        #[structopt(short = "t", long, possible_values = &VoltageUnit::variants(), case_insensitive = true)]
+        to: VoltageUnit,
+    },
+
+    /// Convert resistance units.
+    Resistance {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &ResistanceUnit::variants(), case_insensitive = true)]
+        from: ResistanceUnit,
+        #[structopt(short = "t", long, possible_values = &ResistanceUnit::variants(), case_insensitive = true)]
+        to: ResistanceUnit,
+    },
+
+    /// Convert illuminance units.
+    Illuminance {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &IlluminanceUnit::variants(), case_insensitive = true)]
+        from: IlluminanceUnit,
+        #[structopt(short = "t", long, possible_values = &IlluminanceUnit::variants(), case_insensitive = true)]
+        to: IlluminanceUnit,
+    },
+
+    /// Convert amount of substance units.
+    Amount {
+        value: f64,
+        #[structopt(short = "f", long, possible_values = &AmountUnit::variants(), case_insensitive = true)]
+        from: AmountUnit,
+        #[structopt(short = "t", long, possible_values = &AmountUnit::variants(), case_insensitive = true)]
+        to: AmountUnit,
+    },
+
 }
 
 /// Macro for quickly defining enums with string variants and utility implementations.
@@ -297,6 +476,89 @@ enum_with_variants!(PressureUnit {
     Bar => "bar",
     Atm => "atm",
     Psi => "psi",
+});
+
+
+enum_with_variants!(CurrentUnit {
+    Ampere => "ampere",
+    Milliampere => "milliampere",
+});
+
+enum_with_variants!(EnergyUnit {
+    Joule => "joule",
+    Calorie => "calorie",
+    Kwh => "kwh",
+});
+
+enum_with_variants!(PowerUnit {
+    Watt => "watt",
+    Kilowatt => "kilowatt",
+    Horsepower => "horsepower",
+});
+
+enum_with_variants!(FrequencyUnit {
+    Hertz => "hertz",
+    Kilohertz => "kilohertz",
+});
+
+enum_with_variants!(AngleUnit {
+    Degree => "degree",
+    Radian => "radian",
+    Gradian => "gradian",
+});
+
+enum_with_variants!(ForceUnit {
+    Newton => "newton",
+    PoundForce => "pound_force",
+});
+
+enum_with_variants!(LuminousUnit {
+    Candela => "candela",
+    Lumen => "lumen",
+    Lux => "lux",
+});
+
+enum_with_variants!(MagneticUnit {
+    Tesla => "tesla",
+    Gauss => "gauss",
+});
+
+enum_with_variants!(RadioactivityUnit {
+    Becquerel => "becquerel",
+    Curie => "curie",
+});
+
+enum_with_variants!(CapacitanceUnit {
+    Farad => "farad",
+});
+
+enum_with_variants!(InductanceUnit {
+    Henry => "henry",
+});
+
+enum_with_variants!(ConductanceUnit {
+    Siemens => "siemens",
+});
+
+enum_with_variants!(ChargeUnit {
+    Coulomb => "coulomb",
+});
+
+enum_with_variants!(VoltageUnit {
+    Volt => "volt",
+});
+
+enum_with_variants!(ResistanceUnit {
+    Ohm => "ohm",
+});
+
+enum_with_variants!(IlluminanceUnit {
+    Lux => "lux",
+    FootCandle => "foot_candle",
+});
+
+enum_with_variants!(AmountUnit {
+    Mole => "mole",
 });
 
 /// Convert bytes to megabytes.
@@ -539,6 +801,275 @@ fn convert_pressure(value: f64, from: PressureUnit, to: PressureUnit) -> Option<
     Some(result)
 }
 
+/// Convert between electric current units (ampere, milliampere).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_current(2.0, CurrentUnit::Ampere, CurrentUnit::Milliampere), Some(2000.0));
+/// assert_eq!(convert_current(4000.0, CurrentUnit::Milliampere, CurrentUnit::Ampere), Some(4.0));
+/// ```
+fn convert_current(value: f64, from: CurrentUnit, to: CurrentUnit) -> Option<f64> {
+    use CurrentUnit::*;
+    let amp = match from {
+        Ampere => value,
+        Milliampere => value / 1000.0,
+    };
+    let result = match to {
+        Ampere => amp,
+        Milliampere => amp * 1000.0,
+    };
+    Some(result)
+}
+
+/// Convert between energy, work, and heat units (joule, calorie, kWh).
+///
+/// # Examples
+/// ```
+/// assert!((convert_energy(1.0, EnergyUnit::Joule, EnergyUnit::Calorie).unwrap() - 0.239006).abs() < 1e-6);
+/// ```
+fn convert_energy(value: f64, from: EnergyUnit, to: EnergyUnit) -> Option<f64> {
+    use EnergyUnit::*;
+    let joule = match from {
+        Joule => value,
+        Calorie => value * 4.184,
+        Kwh => value * 3_600_000.0,
+    };
+    let result = match to {
+        Joule => joule,
+        Calorie => joule / 4.184,
+        Kwh => joule / 3_600_000.0,
+    };
+    Some(result)
+}
+
+/// Convert between power units (watt, kilowatt, horsepower).
+///
+/// # Examples
+/// ```
+/// assert!((convert_power(1.0, PowerUnit::Kilowatt, PowerUnit::Horsepower).unwrap() - 1.34102).abs() < 1e-5);
+/// ```
+fn convert_power(value: f64, from: PowerUnit, to: PowerUnit) -> Option<f64> {
+    use PowerUnit::*;
+    let watt = match from {
+        Watt => value,
+        Kilowatt => value * 1000.0,
+        Horsepower => value * 745.699872,
+    };
+    let result = match to {
+        Watt => watt,
+        Kilowatt => watt / 1000.0,
+        Horsepower => watt / 745.699872,
+    };
+    Some(result)
+}
+
+/// Convert between frequency units (hertz, kilohertz).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_frequency(1500.0, FrequencyUnit::Hertz, FrequencyUnit::Kilohertz), Some(1.5));
+/// ```
+fn convert_frequency(value: f64, from: FrequencyUnit, to: FrequencyUnit) -> Option<f64> {
+    use FrequencyUnit::*;
+    let hz = match from {
+        Hertz => value,
+        Kilohertz => value * 1000.0,
+    };
+    let result = match to {
+        Hertz => hz,
+        Kilohertz => hz / 1000.0,
+    };
+    Some(result)
+}
+
+/// Convert between angle units (degree, radian, gradian).
+///
+/// # Examples
+/// ```
+/// assert!((convert_angle(180.0, AngleUnit::Degree, AngleUnit::Radian).unwrap() - std::f64::consts::PI).abs() < 1e-10);
+/// ```
+fn convert_angle(value: f64, from: AngleUnit, to: AngleUnit) -> Option<f64> {
+    use AngleUnit::*;
+    let in_deg = match from {
+        Degree => value,
+        Radian => value * 180.0 / std::f64::consts::PI,
+        Gradian => value * 0.9,
+    };
+    let result = match to {
+        Degree => in_deg,
+        Radian => in_deg * std::f64::consts::PI / 180.0,
+        Gradian => in_deg / 0.9,
+    };
+    Some(result)
+}
+
+/// Convert between force units (newton, pound-force).
+///
+/// # Examples
+/// ```
+/// assert!((convert_force(10.0, ForceUnit::Newton, ForceUnit::PoundForce).unwrap() - 2.24809).abs() < 1e-5);
+/// ```
+fn convert_force(value: f64, from: ForceUnit, to: ForceUnit) -> Option<f64> {
+    use ForceUnit::*;
+    let newton = match from {
+        Newton => value,
+        PoundForce => value * 4.4482216153,
+    };
+    let result = match to {
+        Newton => newton,
+        PoundForce => newton / 4.4482216153,
+    };
+    Some(result)
+}
+
+/// Convert between luminous units (candela, lumen, lux).
+///
+/// **Note:** These units are not generally directly interconvertible as they represent different physical quantities.
+/// This function only supports identity conversions.
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_luminous(5.0, LuminousUnit::Candela, LuminousUnit::Candela), Some(5.0));
+/// ```
+fn convert_luminous(value: f64, from: LuminousUnit, to: LuminousUnit) -> Option<f64> {
+    use LuminousUnit::*;
+    match (from, to) {
+        (Candela, Candela) | (Lumen, Lumen) | (Lux, Lux) => Some(value),
+        _ => None,
+    }
+}
+
+/// Convert between magnetic field units (tesla, gauss).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_magnetic(1.0, MagneticUnit::Tesla, MagneticUnit::Gauss), Some(10000.0));
+/// ```
+fn convert_magnetic(value: f64, from: MagneticUnit, to: MagneticUnit) -> Option<f64> {
+    use MagneticUnit::*;
+    let tesla = match from {
+        Tesla => value,
+        Gauss => value / 10_000.0,
+    };
+    let result = match to {
+        Tesla => tesla,
+        Gauss => tesla * 10_000.0,
+    };
+    Some(result)
+}
+
+/// Convert between radioactivity units (becquerel, curie).
+///
+/// # Examples
+/// ```
+/// assert!((convert_radioactivity(1.0, RadioactivityUnit::Curie, RadioactivityUnit::Becquerel).unwrap() - 3.7e10).abs() < 1e2);
+/// assert!((convert_radioactivity(3.7e10, RadioactivityUnit::Becquerel, RadioactivityUnit::Curie).unwrap() - 1.0).abs() < 1e-10);
+/// ```
+fn convert_radioactivity(value: f64, from: RadioactivityUnit, to: RadioactivityUnit) -> Option<f64> {
+    use RadioactivityUnit::*;
+    let becquerel = match from {
+        Becquerel => value,
+        Curie => value * 3.7e10,
+    };
+    let result = match to {
+        Becquerel => becquerel,
+        Curie => becquerel / 3.7e10,
+    };
+    Some(result)
+}
+
+/// Convert capacitance units (farad only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_capacitance(1.0, CapacitanceUnit::Farad, CapacitanceUnit::Farad), Some(1.0));
+/// ```
+fn convert_capacitance(value: f64, _from: CapacitanceUnit, _to: CapacitanceUnit) -> Option<f64> {
+    Some(value)
+}
+
+/// Convert inductance units (henry only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_inductance(1.0, InductanceUnit::Henry, InductanceUnit::Henry), Some(1.0));
+/// ```
+fn convert_inductance(value: f64, _from: InductanceUnit, _to: InductanceUnit) -> Option<f64> {
+    Some(value)
+}
+
+/// Convert conductance units (siemens only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_conductance(1.0, ConductanceUnit::Siemens, ConductanceUnit::Siemens), Some(1.0));
+/// ```
+fn convert_conductance(value: f64, _from: ConductanceUnit, _to: ConductanceUnit) -> Option<f64> {
+    Some(value)
+}
+
+/// Convert electric charge units (coulomb only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_charge(4.0, ChargeUnit::Coulomb, ChargeUnit::Coulomb), Some(4.0));
+/// ```
+fn convert_charge(value: f64, _from: ChargeUnit, _to: ChargeUnit) -> Option<f64> {
+    Some(value)
+}
+
+/// Convert voltage units (volt only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_voltage(12.0, VoltageUnit::Volt, VoltageUnit::Volt), Some(12.0));
+/// ```
+fn convert_voltage(value: f64, _from: VoltageUnit, _to: VoltageUnit) -> Option<f64> {
+    Some(value)
+}
+
+/// Convert resistance units (ohm only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_resistance(100.0, ResistanceUnit::Ohm, ResistanceUnit::Ohm), Some(100.0));
+/// ```
+fn convert_resistance(value: f64, _from: ResistanceUnit, _to: ResistanceUnit) -> Option<f64> {
+    Some(value)
+}
+
+/// Convert between illuminance units (lux, foot-candle).
+///
+/// # Examples
+/// ```
+/// assert!((convert_illuminance(1.0, IlluminanceUnit::FootCandle, IlluminanceUnit::Lux).unwrap() - 10.76391).abs() < 1e-5);
+/// assert!((convert_illuminance(10.76391, IlluminanceUnit::Lux, IlluminanceUnit::FootCandle).unwrap() - 1.0).abs() < 1e-5);
+/// ```
+fn convert_illuminance(value: f64, from: IlluminanceUnit, to: IlluminanceUnit) -> Option<f64> {
+    use IlluminanceUnit::*;
+    let lux = match from {
+        Lux => value,
+        FootCandle => value * 10.76391,
+    };
+    let result = match to {
+        Lux => lux,
+        FootCandle => lux / 10.76391,
+    };
+    Some(result)
+}
+
+/// Convert amount of substance units (mole only).
+///
+/// # Examples
+/// ```
+/// assert_eq!(convert_amount(2.0, AmountUnit::Mole, AmountUnit::Mole), Some(2.0));
+/// ```
+fn convert_amount(value: f64, _from: AmountUnit, _to: AmountUnit) -> Option<f64> {
+    Some(value)
+}
+
+
+
 /// Entry point for the CLI application.
 ///
 /// Parses CLI arguments, dispatches the appropriate conversion, and prints results.
@@ -658,7 +1189,162 @@ fn main() {
                 println!("Conversion from {} to {} not supported.", from, to);
             }
         }
+          Cli::Current { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_current(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Energy { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_energy(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Power { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_power(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Frequency { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_frequency(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Angle { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_angle(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Force { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_force(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Luminous { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_luminous(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!(
+                    "Conversion from {} to {} is not directly supported (dimensional incompatibility).",
+                    from, to
+                );
+            }
+        }
+        Cli::Magnetic { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_magnetic(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Radioactivity { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_radioactivity(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Capacitance { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_capacitance(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Inductance { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_inductance(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Conductance { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_conductance(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Charge { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_charge(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Voltage { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_voltage(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            }
+        }    
+     Cli::Resistance { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_resistance(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+    Cli::Illuminance { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_illuminance(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
+        Cli::Amount { value, from, to } => {
+            if from == to {
+                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+            } else if let Some(result) = convert_amount(value, from.clone(), to.clone()) {
+                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+            } else {
+                println!("Conversion from {} to {} not supported.", from, to);
+            }
+        }
     }
+
 }
 
 #[cfg(test)]
@@ -751,4 +1437,103 @@ mod tests {
         assert!((convert_pressure(1.0, Psi, Bar).unwrap() - 0.0689476).abs() < 1e-6);
         assert!((convert_pressure(1.0, Bar, Psi).unwrap() - 14.5038).abs() < 1e-4);
     }
+
+    #[test]
+    fn test_convert_current() {
+        assert_eq!(convert_current(1.0, CurrentUnit::Ampere, CurrentUnit::Milliampere), Some(1000.0));
+        assert_eq!(convert_current(5000.0, CurrentUnit::Milliampere, CurrentUnit::Ampere), Some(5.0));
+    }
+
+    #[test]
+    fn test_convert_energy() {
+        assert!((convert_energy(1.0, EnergyUnit::Joule, EnergyUnit::Calorie).unwrap() - 0.2390057361).abs() < 1e-6);
+        assert!((convert_energy(1.0, EnergyUnit::Calorie, EnergyUnit::Joule).unwrap() - 4.184).abs() < 1e-6);
+        assert!((convert_energy(1.0, EnergyUnit::Kwh, EnergyUnit::Joule).unwrap() - 3_600_000.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn test_convert_power() {
+        assert!((convert_power(1.0, PowerUnit::Kilowatt, PowerUnit::Horsepower).unwrap() - 1.34102209).abs() < 1e-6);
+        assert!((convert_power(10.0, PowerUnit::Horsepower, PowerUnit::Watt).unwrap() - 7456.99872).abs() < 1e-3);
+    }
+
+    #[test]
+    fn test_convert_frequency() {
+        assert_eq!(convert_frequency(1000.0, FrequencyUnit::Hertz, FrequencyUnit::Kilohertz), Some(1.0));
+        assert_eq!(convert_frequency(2.5, FrequencyUnit::Kilohertz, FrequencyUnit::Hertz), Some(2500.0));
+    }
+
+    #[test]
+    fn test_convert_angle() {
+        use std::f64::consts::PI;
+        assert!((convert_angle(180.0, AngleUnit::Degree, AngleUnit::Radian).unwrap() - PI).abs() < 1e-10);
+        assert!((convert_angle(100.0, AngleUnit::Gradian, AngleUnit::Degree).unwrap() - 90.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_convert_force() {
+        assert!((convert_force(10.0, ForceUnit::Newton, ForceUnit::PoundForce).unwrap() - 2.248089).abs() < 1e-5);
+        assert!((convert_force(1.0, ForceUnit::PoundForce, ForceUnit::Newton).unwrap() - 4.4482216153).abs() < 1e-9);
+    }
+
+    #[test]
+    fn test_convert_luminous() {
+        assert_eq!(convert_luminous(5.0, LuminousUnit::Candela, LuminousUnit::Candela), Some(5.0));
+        assert_eq!(convert_luminous(10.0, LuminousUnit::Lux, LuminousUnit::Lux), Some(10.0));
+        assert_eq!(convert_luminous(1.0, LuminousUnit::Candela, LuminousUnit::Lumen), None);
+    }
+
+    #[test]
+    fn test_convert_magnetic() {
+        assert_eq!(convert_magnetic(1.0, MagneticUnit::Tesla, MagneticUnit::Gauss), Some(10000.0));
+        assert!((convert_magnetic(10000.0, MagneticUnit::Gauss, MagneticUnit::Tesla).unwrap() - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_convert_radioactivity() {
+        assert!((convert_radioactivity(1.0, RadioactivityUnit::Curie, RadioactivityUnit::Becquerel).unwrap() - 3.7e10).abs() < 1e2);
+        assert!((convert_radioactivity(3.7e10, RadioactivityUnit::Becquerel, RadioactivityUnit::Curie).unwrap() - 1.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_convert_capacitance() {
+        assert_eq!(convert_capacitance(2.0, CapacitanceUnit::Farad, CapacitanceUnit::Farad), Some(2.0));
+    }
+
+    #[test]
+    fn test_convert_inductance() {
+        assert_eq!(convert_inductance(5.0, InductanceUnit::Henry, InductanceUnit::Henry), Some(5.0));
+    }
+
+    #[test]
+    fn test_convert_conductance() {
+        assert_eq!(convert_conductance(3.0, ConductanceUnit::Siemens, ConductanceUnit::Siemens), Some(3.0));
+    }
+
+    #[test]
+    fn test_convert_charge() {
+        assert_eq!(convert_charge(8.0, ChargeUnit::Coulomb, ChargeUnit::Coulomb), Some(8.0));
+    }
+
+    #[test]
+    fn test_convert_voltage() {
+        assert_eq!(convert_voltage(12.0, VoltageUnit::Volt, VoltageUnit::Volt), Some(12.0));
+    }
+
+    #[test]
+    fn test_convert_resistance() {
+        assert_eq!(convert_resistance(20.0, ResistanceUnit::Ohm, ResistanceUnit::Ohm), Some(20.0));
+    }
+
+    #[test]
+    fn test_convert_illuminance() {
+        assert!((convert_illuminance(1.0, IlluminanceUnit::FootCandle, IlluminanceUnit::Lux).unwrap() - 10.76391).abs() < 1e-5);
+        assert!((convert_illuminance(10.76391, IlluminanceUnit::Lux, IlluminanceUnit::FootCandle).unwrap() - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn test_convert_amount() {
+        assert_eq!(convert_amount(2.0, AmountUnit::Mole, AmountUnit::Mole), Some(2.0));
+    }
+
 }
