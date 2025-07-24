@@ -93,6 +93,7 @@
 //!
 use std::fmt;
 use structopt::StructOpt;
+use colored::*;
 
 /// Constant: Number of feet in a meter.
 const FEET_IN_METER: f64 = 3.28084;
@@ -1083,11 +1084,18 @@ fn main() {
             human_readable,
         } => {
             if megabytes {
-                println!("{} bytes = {:.2} MB", num, bytes_to_mb(num));
+                println!("{} = {}",
+                    format!("{} bytes", num).cyan().bold(),
+                    format!("{:.2} MB", bytes_to_mb(num)).magenta().bold()
+                );
             } else if human_readable {
-                println!("{} bytes = {}", num, bytes_to_human_readable(num));
+                println!("{} = {}",
+                    format!("{} bytes", num).cyan().bold(),
+                    bytes_to_human_readable(num).yellow().bold()
+                );
             } else {
-                println!("Please specify --megabytes or --human-readable. See --help.");
+                eprintln!("{}", "Please specify --megabytes or --human-readable. See --help."
+                    .red().bold());
             }
         }
         Cli::Time {
@@ -1106,11 +1114,23 @@ fn main() {
         }
         Cli::Length { value, from, to } => {
             if from == to {
-                println!("{:.4} {} = {:.4} {}", value, from, value, to);
+                println!(
+                    "{} = {}",
+                    format!("{:.4} {}", value, from).cyan(),
+                    format!("{:.4} {}", value, to).green()
+                );
             } else if let Some(result) = convert_length(value, from.clone(), to.clone()) {
-                println!("{:.4} {} = {:.4} {}", value, from, result, to);
+                println!(
+                    "{} = {}",
+                    format!("{:.4} {}", value, from).cyan(),
+                    format!("{:.4} {}", result, to).green()
+                );
             } else {
-                println!("Conversion from {} to {} not supported.", from, to);
+                eprintln!("{}",
+                    format!("Conversion from {} to {} not supported.", from, to)
+                        .red()
+                        .bold()
+                );
             }
         }
         Cli::Temperature { value, from, to } => {
